@@ -1,9 +1,7 @@
 {
   "Environment": "devl",
   "ProjectName": "cfn-nested",
-  "ApiBaseName": "api-nested-stack",
+  "ApiBaseName": "api",
   "EndpointConfigurationType": "REGIONAL",
-  "CreateRestApi": "true",
-  "PathPart": "orders",
   "CiSuffix": ""
 }
