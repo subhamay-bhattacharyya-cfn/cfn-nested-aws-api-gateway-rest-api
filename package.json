@@ -1,7 +1,7 @@
 {
   "name": "cfn-nested-aws-api-gateway-rest-api",
   "version": "0.0.0",
-  "description": "CloudFormation template repository with semantic versioning and automated release management.",
+  "description": "Nested CloudFormation template for an API Gateway REST API, with semantic versioning and automated release management.",
   "main": "index.js",
   "scripts": {
     "release": "semantic-release"
