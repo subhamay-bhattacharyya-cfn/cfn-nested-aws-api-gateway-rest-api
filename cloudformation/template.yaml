@@ -17,7 +17,6 @@ Metadata:
           - ApiDescription
           - EndpointConfigurationType
           - CreateRestApi
-          - PathPart
       - Label:
           default: "Advanced Configuration"
         Parameters:
@@ -33,8 +32,6 @@ Metadata:
         default: "Endpoint Configuration Type"
       CreateRestApi:
         default: "Create REST API"
-      PathPart:
-        default: "Path Part"
       Environment:
         default: "Environment"
       CiSuffix:
@@ -81,15 +78,6 @@ Parameters:
       - "true"
       - "false"
     Description: "Whether to create the API Gateway REST API. Set to false to skip the REST API, its resources, and the outputs."
-
-  PathPart:
-    Type: String
-    Default: "orders"
-    MinLength: 1
-    MaxLength: 256
-    AllowedPattern: "^[a-zA-Z0-9._-]+$"
-    ConstraintDescription: "Path part must be 1-256 characters and can only contain letters, numbers, periods, underscores, and hyphens"
-    Description: "Path segment created under the REST API root for the new API Gateway resource"
 
   Environment:
     Type: String
@@ -138,7 +126,7 @@ Resources:
     Condition: ShouldCreateRestApi
     Metadata:
       com.aws.cloudformation.Context:
-        why: "Adds the path segment set by PathPart (default /orders) directly under the REST API root. Endpoints are attached to this resource as child resources and methods."
+        why: "Adds the /orders path segment directly under the REST API root. Order endpoints are attached to this resource as child resources and methods."
         trust:
           src: infer
           conf: low
@@ -146,7 +134,7 @@ Resources:
     Properties:
       RestApiId: !Ref RestApi
       ParentId: !GetAtt RestApi.RootResourceId
-      PathPart: !Ref PathPart
+      PathPart: orders
 
 Outputs:
   RestApiId:
