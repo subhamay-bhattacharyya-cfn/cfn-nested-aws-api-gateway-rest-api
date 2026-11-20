@@ -17,7 +17,7 @@
 
 ---
 
-This repository contains a nested CloudFormation template that creates an API Gateway REST API with a configurable name, description, and endpoint type, plus a child `orders` resource under the root.
+This repository contains a nested CloudFormation template that creates an API Gateway REST API with a configurable name, description, and endpoint type.
 
 ## Overview
 
@@ -36,7 +36,6 @@ This is a **nested stack template** designed to be invoked from a parent/root Cl
 - ✅ Configurable API description
 - ✅ Optional CI suffix appended to the API name
 - ✅ Optional REST API creation via `CreateRestApi` (set to `false` to skip the REST API and its outputs)
-- ✅ Child `orders` resource under the REST API root, with the path segment set by `PathPart`
 - ✅ Tags for `ProjectName` and `Environment`
 
 The REST API has no methods or deployment yet. Those are expected to be added by the parent stack or by a later change to this template.
@@ -51,8 +50,7 @@ The REST API has no methods or deployment yet. Those are expected to be added by
 | `EndpointConfigurationType` | String | `REGIONAL` | `REGIONAL`, `EDGE`, `PRIVATE` | Endpoint type of the REST API |
 | `Environment` | String | `devl` | `devl`, `test`, `prod` | Deployment environment |
 | `CiSuffix` | String | `""` | Optional | Suffix appended to the API name when set (for example, a CI pipeline ID) |
-| `CreateRestApi` | String | `true` | `true`, `false` | Whether to create the REST API, its `orders` resource, and the outputs |
-| `PathPart` | String | `orders` | 1–256 chars: letters, numbers, periods, underscores, hyphens | Path segment for the child resource under the REST API root |
+| `CreateRestApi` | String | `true` | `true`, `false` | Whether to create the REST API and its outputs |
 
 ### Endpoint Configuration Types
 
@@ -111,7 +109,6 @@ Parameter values are read from `cloudformation/parameters.json`, which should co
   "ApiDescription": "API Description",
   "EndpointConfigurationType": "REGIONAL",
   "CreateRestApi": "true",
-  "PathPart": "orders",
   "Environment": "devl",
   "CiSuffix": ""
 }

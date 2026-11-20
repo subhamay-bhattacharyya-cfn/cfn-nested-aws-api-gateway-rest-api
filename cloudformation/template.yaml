@@ -121,21 +121,6 @@ Resources:
         - Key: Environment
           Value: !Ref Environment
 
-  RestApiResource:
-    Type: AWS::ApiGateway::Resource
-    Condition: ShouldCreateRestApi
-    Metadata:
-      com.aws.cloudformation.Context:
-        why: "Adds the /orders path segment directly under the REST API root. Order endpoints are attached to this resource as child resources and methods."
-        trust:
-          src: infer
-          conf: low
-          note: "rationale not documented"
-    Properties:
-      RestApiId: !Ref RestApi
-      ParentId: !GetAtt RestApi.RootResourceId
-      PathPart: orders
-
 Outputs:
   RestApiId:
     Condition: ShouldCreateRestApi
