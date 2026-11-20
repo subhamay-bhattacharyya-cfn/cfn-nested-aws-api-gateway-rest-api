@@ -3,5 +3,7 @@
   "ProjectName": "cfn-nested",
   "ApiBaseName": "api-nested-stack",
   "EndpointConfigurationType": "REGIONAL",
+  "CreateRestApi": "true",
+  "PathPart": "orders",
   "CiSuffix": ""
 }

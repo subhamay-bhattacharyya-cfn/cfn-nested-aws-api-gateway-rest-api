@@ -16,6 +16,8 @@ Metadata:
           - ApiBaseName
           - ApiDescription
           - EndpointConfigurationType
+          - CreateRestApi
+          - PathPart
       - Label:
           default: "Advanced Configuration"
         Parameters:
@@ -29,6 +31,10 @@ Metadata:
         default: "API Description"
       EndpointConfigurationType:
         default: "Endpoint Configuration Type"
+      CreateRestApi:
+        default: "Create REST API"
+      PathPart:
+        default: "Path Part"
       Environment:
         default: "Environment"
       CiSuffix:
@@ -68,6 +74,23 @@ Parameters:
       - "PRIVATE"
     Description: "Endpoint type of the API Gateway REST API. REGIONAL serves clients in the same Region, EDGE uses a CloudFront distribution, and PRIVATE is reachable only from within a VPC through an interface VPC endpoint."
 
+  CreateRestApi:
+    Type: String
+    Default: "true"
+    AllowedValues:
+      - "true"
+      - "false"
+    Description: "Whether to create the API Gateway REST API. Set to false to skip the REST API, its resources, and the outputs."
+
+  PathPart:
+    Type: String
+    Default: "orders"
+    MinLength: 1
+    MaxLength: 256
+    AllowedPattern: "^[a-zA-Z0-9._-]+$"
+    ConstraintDescription: "Path part must be 1-256 characters and can only contain letters, numbers, periods, underscores, and hyphens"
+    Description: "Path segment created under the REST API root for the new API Gateway resource"
+
   Environment:
     Type: String
     Default: "devl"
@@ -84,10 +107,12 @@ Parameters:
 
 Conditions:
   HasCiSuffix: !Not [!Equals [!Ref CiSuffix, ""]]
+  ShouldCreateRestApi: !Equals [!Ref CreateRestApi, "true"]
 
 Resources:
   RestApi:
     Type: AWS::ApiGateway::RestApi
+    Condition: ShouldCreateRestApi
     Metadata:
       com.aws.cloudformation.Context:
         why: "API Gateway REST API entry point for the project. Methods, resources, and a deployment are not yet defined."
@@ -108,11 +133,28 @@ Resources:
         - Key: Environment
           Value: !Ref Environment
 
+  RestApiResource:
+    Type: AWS::ApiGateway::Resource
+    Condition: ShouldCreateRestApi
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: "Adds the path segment set by PathPart (default /orders) directly under the REST API root. Endpoints are attached to this resource as child resources and methods."
+        trust:
+          src: infer
+          conf: low
+          note: "rationale not documented"
+    Properties:
+      RestApiId: !Ref RestApi
+      ParentId: !GetAtt RestApi.RootResourceId
+      PathPart: !Ref PathPart
+
 Outputs:
   RestApiId:
+    Condition: ShouldCreateRestApi
     Description: "ID of the API Gateway REST API"
     Value: !Ref RestApi
 
   RestApiRootResourceId:
+    Condition: ShouldCreateRestApi
     Description: "Root resource ID of the API Gateway REST API"
     Value: !GetAtt RestApi.RootResourceId

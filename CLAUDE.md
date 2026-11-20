@@ -12,6 +12,8 @@ This is a **CloudFormation template repository** that provides a reusable nested
 - Configurable API name built from project, base name, account ID, environment, and region
 - Configurable API description and endpoint type (`REGIONAL`, `EDGE`, `PRIVATE`)
 - Optional CI suffix appended to the API name
+- Optional creation of the REST API via `CreateRestApi` (dependent resources and outputs are skipped when false)
+- A child `orders` resource under the REST API root, with its path segment set by `PathPart`
 - Automated semantic versioning and releases
 - AWS OIDC authentication for CI/CD deployments
 
@@ -106,7 +108,7 @@ This ensures:
 The template's parameters are grouped in `Metadata` under `AWS::CloudFormation::Interface`:
 
 - **Common Bucket Configuration**: `ProjectName`, `Environment` (the group label is a leftover from an earlier S3 template)
-- **API Configuration**: `ApiBaseName`, `ApiDescription`, `EndpointConfigurationType`
+- **API Configuration**: `ApiBaseName`, `ApiDescription`, `EndpointConfigurationType`, `CreateRestApi`, `PathPart`
 - **Advanced Configuration**: `CiSuffix`
 
 Every parameter listed in `Metadata` must also be defined in `Parameters`.
@@ -125,8 +127,10 @@ Every parameter listed in `Metadata` must also be defined in `Parameters`.
 - `EndpointConfigurationType` (default: `REGIONAL`; allowed: `REGIONAL`, `EDGE`, `PRIVATE`): Endpoint type
 - `Environment` (default: `devl`; allowed: `devl`, `test`, `prod`): Environment label, also used as the `Environment` tag
 - `CiSuffix` (default: empty): Optional suffix appended to the API name
+- `CreateRestApi` (default: `true`; allowed: `true`, `false`): Whether to create the REST API, its `orders` resource, and the outputs
+- `PathPart` (default: `orders`): Path segment for the child resource under the REST API root
 
-**Key outputs:**
+**Key outputs (both conditional on `CreateRestApi`):**
 
 - `RestApiId`: REST API ID
 - `RestApiRootResourceId`: Root resource ID, used to add child resources
@@ -134,8 +138,10 @@ Every parameter listed in `Metadata` must also be defined in `Parameters`.
 **Features:**
 
 - Conditional naming: different API name with/without CI suffix
+- Conditional creation: `RestApi` uses the `ShouldCreateRestApi` condition; `RestApiResource` and outputs use the same condition
+- `RestApiResource` (`AWS::ApiGateway::Resource`): child of the root with `PathPart` as its path segment
 - Tags: `ProjectName` and `Environment`
-- The REST API has no methods, resources, or deployment yet
+- The REST API has no methods or deployment yet
 
 ### `cloudformation/parameters.json`
 
